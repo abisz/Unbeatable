@@ -3,8 +3,6 @@ package gui;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import gui.Field;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +13,7 @@ public class Board extends JFrame {
     private FieldListener fl = new FieldListener();
 
     private boolean turnX = true;
+    private int turnCounter = 0;
 
     public Board() {
         super();
@@ -56,8 +55,18 @@ public class Board extends JFrame {
             (state[2].equals(state[4]) && state[0].equals(state[6]) && !state[0].equals("_"))
 
         ) {
-            System.out.println("Game Over");
+            gameOver(false);
         }
+    }
+
+    private void gameOver(boolean tie) {
+        if (tie) {
+            System.out.println("Tie");
+        } else {
+            // turnX is already switched for next turn
+            System.out.println("Winner: " + (turnX ? "O" : "X"));
+        }
+        System.exit(0);
     }
 
     private class FieldListener implements ActionListener {
@@ -68,6 +77,7 @@ public class Board extends JFrame {
 
             if (!source.getClicked()) {
                 source.click(turnX ? 'X' : 'O');
+
                 turnX = !turnX;
 
                 String[] state = new String[9];
@@ -81,6 +91,11 @@ public class Board extends JFrame {
                 }
 
                 evaluateState(state);
+
+                turnCounter++;
+                if (turnCounter == 9) {
+                    gameOver(true);
+                }
 
             } else {
                 System.out.println("Please click on another field");
