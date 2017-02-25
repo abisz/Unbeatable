@@ -5,7 +5,6 @@ import javax.swing.JButton;
 public class Field extends JButton{
 
     private int index;
-
     private boolean clicked;
 
     public Field(int index) {
@@ -21,8 +20,9 @@ public class Field extends JButton{
         return clicked;
     }
 
-    public void click() {
+    public void click(char player) {
         clicked = true;
+        setText(Character.toString(player));
     }
 
 

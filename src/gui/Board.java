@@ -14,6 +14,8 @@ public class Board extends JFrame {
     private Field[] fields = new Field[9];
     private FieldListener fl = new FieldListener();
 
+    private boolean turnX = true;
+
     public Board() {
         super();
         initComponents();
@@ -37,6 +39,27 @@ public class Board extends JFrame {
         setVisible(true);
     }
 
+    public void evaluateState(String[] state) {
+        if (
+            // Rows
+            (state[0].equals(state[1]) && state[0].equals(state[2]) && !state[0].equals("_")) ||
+            (state[3].equals(state[4]) && state[3].equals(state[5]) && !state[3].equals("_")) ||
+            (state[6].equals(state[7]) && state[6].equals(state[8]) && !state[6].equals("_")) ||
+
+            // Columns
+            (state[0].equals(state[3]) && state[0].equals(state[6]) && !state[0].equals("_")) ||
+            (state[1].equals(state[4]) && state[1].equals(state[7]) && !state[1].equals("_")) ||
+            (state[2].equals(state[5]) && state[2].equals(state[8]) && !state[2].equals("_")) ||
+
+            // Diagonals
+            (state[0].equals(state[4]) && state[0].equals(state[8]) && !state[0].equals("_")) ||
+            (state[2].equals(state[4]) && state[0].equals(state[6]) && !state[0].equals("_"))
+
+        ) {
+            System.out.println("Game Over");
+        }
+    }
+
     private class FieldListener implements ActionListener {
 
         @Override
@@ -44,7 +67,21 @@ public class Board extends JFrame {
             Field source = (Field) e.getSource();
 
             if (!source.getClicked()) {
-                source.click();
+                source.click(turnX ? 'X' : 'O');
+                turnX = !turnX;
+
+                String[] state = new String[9];
+
+                for (int i = 0; i < fields.length; i++) {
+                    if (fields[i].getText().isEmpty()) {
+                        state[i] = "_";
+                    } else {
+                        state[i] = fields[i].getText();
+                    }
+                }
+
+                evaluateState(state);
+
             } else {
                 System.out.println("Please click on another field");
             }
