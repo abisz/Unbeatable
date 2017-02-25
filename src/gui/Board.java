@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import root.State;
+
 public class Board extends JFrame {
 
     private Field[] fields = new Field[9];
@@ -14,6 +16,8 @@ public class Board extends JFrame {
 
     private boolean turnX = true;
     private int turnCounter = 0;
+
+    private State state = new State();
 
     public Board() {
         super();
@@ -38,27 +42,6 @@ public class Board extends JFrame {
         setVisible(true);
     }
 
-    public void evaluateState(String[] state) {
-        if (
-            // Rows
-            (state[0].equals(state[1]) && state[0].equals(state[2]) && !state[0].equals("_")) ||
-            (state[3].equals(state[4]) && state[3].equals(state[5]) && !state[3].equals("_")) ||
-            (state[6].equals(state[7]) && state[6].equals(state[8]) && !state[6].equals("_")) ||
-
-            // Columns
-            (state[0].equals(state[3]) && state[0].equals(state[6]) && !state[0].equals("_")) ||
-            (state[1].equals(state[4]) && state[1].equals(state[7]) && !state[1].equals("_")) ||
-            (state[2].equals(state[5]) && state[2].equals(state[8]) && !state[2].equals("_")) ||
-
-            // Diagonals
-            (state[0].equals(state[4]) && state[0].equals(state[8]) && !state[0].equals("_")) ||
-            (state[2].equals(state[4]) && state[0].equals(state[6]) && !state[0].equals("_"))
-
-        ) {
-            gameOver(false);
-        }
-    }
-
     private void gameOver(boolean tie) {
         if (tie) {
             System.out.println("Tie");
@@ -80,17 +63,11 @@ public class Board extends JFrame {
 
                 turnX = !turnX;
 
-                String[] state = new String[9];
+                state.setState(source.getText(), source.getIndex());
 
-                for (int i = 0; i < fields.length; i++) {
-                    if (fields[i].getText().isEmpty()) {
-                        state[i] = "_";
-                    } else {
-                        state[i] = fields[i].getText();
-                    }
+                if (State.isWinning(state)) {
+                    gameOver(false);
                 }
-
-                evaluateState(state);
 
                 turnCounter++;
                 if (turnCounter == 9) {
