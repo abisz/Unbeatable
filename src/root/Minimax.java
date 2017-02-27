@@ -3,6 +3,7 @@ package root;
 import root.State;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Minimax {
 
@@ -14,25 +15,41 @@ public class Minimax {
         this.opponent = opponent;
     }
 
-    public int nextMove(State state, String activePlayer) {
+    public MoveEntry<Integer, Integer> nextMove(State state, String activePlayer) {
         ArrayList<Integer> emptyFields = state.emtpyFields();
 
-        if (state.isWinning(player)) {
-            return 10;
+        if (state.isWinning(this.player)) {
+            return new MoveEntry<>(-1, 10);
         } else if (State.isWinning(state)) {
-            // check if ai is winning has already failed, therefore this case is human winning
-            return -10;
+            return new MoveEntry<>(-1, -10);
         } else if (emptyFields.size() == 0) {
-            return 0;
+            return new MoveEntry<>(-1, 0);
         }
 
-        for (int i = 0; i < emptyFields.size(); i++) {
-            State newState = state.setStateCopy(activePlayer, emptyFields.get(1));
+        HashMap<Integer, Integer> moves = new HashMap<>();
 
-
+        for (Integer emptyField : emptyFields) {
+            State newState = state.setStateCopy(activePlayer, emptyField);
+            String nextPlayer = activePlayer.equals(this.player) ? this.opponent : this.player;
+            moves.put(emptyField, nextMove(newState, nextPlayer).getValue());
         }
 
-        return 0;
+        // To make compiler happy, because otherwise it might have not been initialized...
+        Integer bestMove = -1;
+        Integer bestScore = activePlayer.equals(this.player) ? -100 : 100;
+
+        for (HashMap.Entry<Integer, Integer> entry : moves.entrySet()) {
+            Integer index = entry.getKey();
+            Integer score = entry.getValue();
+
+            if ((activePlayer.equals(this.player) && score > bestScore) ||
+                    (activePlayer.equals(this.opponent) && score < bestScore)) {
+                bestScore = score;
+                bestMove = index;
+            }
+        }
+
+        return new MoveEntry<>(bestMove, bestScore);
     }
 
 }

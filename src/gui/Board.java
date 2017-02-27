@@ -6,7 +6,6 @@ import javax.swing.WindowConstants;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import root.State;
 import root.Minimax;
@@ -18,9 +17,14 @@ public class Board extends JFrame {
 
     private boolean turnX = true;
     private int turnCounter = 0;
+    private boolean isGameOver;
 
     private boolean aiMode;
     private Minimax ai;
+
+    // Debugging
+    // String[] initState = {"X", "O", "_", "_", "O", "_", "_", "_", "X"};
+    // private State state = new State(initState);
 
     private State state = new State();
 
@@ -28,6 +32,7 @@ public class Board extends JFrame {
         super();
         initComponents();
         this.aiMode = aiMode;
+        this.isGameOver = false;
 
         if (aiMode) {
             ai = new Minimax("O", "X");
@@ -43,6 +48,7 @@ public class Board extends JFrame {
             fields[i] = new Field(i);
 
             fields[i].addActionListener(fl);
+            fields[i].setText(state.getState()[i]);
 
             this.add(fields[i]);
         }
@@ -53,13 +59,14 @@ public class Board extends JFrame {
     }
 
     private void gameOver(boolean tie) {
+        this.isGameOver = true;
         if (tie) {
             System.out.println("Tie");
         } else {
             // turnX is already switched for next turn
             System.out.println("Winner: " + (turnX ? "O" : "X"));
         }
-        System.exit(0);
+        // System.exit(0);
     }
 
     public void fieldClicked(int index) {
@@ -85,18 +92,6 @@ public class Board extends JFrame {
         }
     }
 
-    public ArrayList<Integer> emptyFields() {
-        ArrayList<Integer> empty = new ArrayList<Integer>();
-
-        for (Field field : fields) {
-            if (!field.getClicked()) {
-                empty.add(field.getIndex());
-            }
-        }
-
-        return empty;
-    }
-
     private class FieldListener implements ActionListener {
 
         @Override
@@ -104,8 +99,8 @@ public class Board extends JFrame {
             Field source = (Field) e.getSource();
             fieldClicked(source.getIndex());
 
-            if (aiMode) {
-                int nextMove = ai.nextMove(state, "O");
+            if (aiMode && !isGameOver) {
+                int nextMove = (int)ai.nextMove(state, "O").getKey();
                 fieldClicked(nextMove);
             }
         }

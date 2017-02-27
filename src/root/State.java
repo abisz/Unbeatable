@@ -21,13 +21,13 @@ public class State {
 
     public State setStateCopy(String player, int index) {
         String[] stringArray = this.getState();
-        State newState = new State(stringArray);
+        State newState = new State(stringArray.clone());
         newState.setState(player, index);
         return newState;
     }
 
     public ArrayList<Integer> emtpyFields() {
-        ArrayList<Integer> empty = new ArrayList<Integer>();
+        ArrayList<Integer> empty = new ArrayList<>();
 
         for (int i = 0; i < this.state.length; i++) {
             String s = this.state[i];
